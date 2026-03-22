@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio Alpin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Menggunakan Lucide Icons untuk tombol play/pause -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #0b0f1a;
+            --card: #161c2d;
+            --accent: #00ffaa; /* Hijau neon modern */
+            --text: #ffffff;
+            --text-muted: #8892b0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Profile Section */
+        .profile {
+            margin-bottom: 40px;
+        }
+
+        .profile img {
+            width: 100px;
+            height: 100px;
+            border-radius: 30px; /* Squircle style */
+            object-fit: cover;
+            border: 2px solid var(--accent);
+            padding: 5px;
+            margin-bottom: 15px;
+        }
+
+        .profile h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        /* Music Card */
+        .music-card {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Disc / Vinyl */
+        .disc-wrapper {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 25px;
+        }
+
+        .disc {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: repeating-radial-gradient(#222, #000 5px);
+            border: 8px solid #2a3347;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: rotate 8s linear infinite;
+            animation-play-state: paused;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .disc.playing {
+            animation-play-state: running;
+        }
+
+        .disc-inner {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 10px solid #161c2d;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Song Info */
+        .song-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .song-artist {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        /* Custom Controls */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: #2a3347;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 10px;
+            transition: width 0.1s linear;
+        }
+
+        .play-btn {
+            background: var(--accent);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            color: #000;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            background: #00e699;
+        }
+
+        .play-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Hidden Original Audio */
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Profile -->
+        <div class="profile">
+            <img src="alpin/foto.jpg" alt="Alpin">
+            <h1>ALPIN</h1>
+        </div>
+
+        <!-- Music Card -->
+        <div class="music-card">
+            <div class="disc-wrapper">
+                <div class="disc" id="disc">
+                    <div class="disc-inner"></div>
+                </div>
+            </div>
+
+            <span class="song-title">Nama Lagu Kamu</span>
+            <span class="song-artist">Favorite Tracks</span>
+
+            <div class="controls">
+                <!-- Progress Bar -->
+                <div class="progress-container" id="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+
+                <!-- Custom Play Button -->
+                <button class="play-btn" id="play-pause">
+                    <i data-lucide="play" id="icon"></i>
+                </button>
+            </div>
+
+            <audio id="main-audio">
+                <source src="alpin/lagu.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi Lucide Icons
+        lucide.createIcons();
+
+        const audio = document.getElementById('main-audio');
+        const playBtn = document.getElementById('play-pause');
+        const icon = document.getElementById('icon');
+        const disc = document.getElementById('disc');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+
+        let isPlaying = false;
+
+        // Fungsi Play/Pause
+        function togglePlay() {
+            if (isPlaying) {
+                audio.pause();
+                disc.classList.remove('playing');
+                icon.setAttribute('data-lucide', 'play');
+            } else {
+                audio.play();
+                disc.classList.add('playing');
+                icon.setAttribute('data-lucide', 'pause');
+            }
+            isPlaying = !isPlaying;
+            lucide.createIcons(); // Refresh icon
+        }
+
+        playBtn.addEventListener('click', togglePlay);
+
+        // Update Progress Bar
+        audio.addEventListener('timeupdate', (e) => {
+            const { duration, currentTime } = e.srcElement;
+            const progressPercent = (currentTime / duration) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+        });
+
+        // Click on Progress Bar
+        progressContainer.addEventListener('click', (e) => {
+            const width = progressContainer.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        });
+
+        // Reset saat lagu selesai
+        audio.addEventListener('ended', () => {
+            disc.classList.remove('playing');
+            icon.setAttribute('data-lucide', 'play');
+            isPlaying = false;
+            progressBar.style.width = '0%';
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
